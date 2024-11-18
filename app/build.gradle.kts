@@ -66,4 +66,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    val retrofitVersion = "2.11.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.2")
+    implementation ("com.squareup.retrofit2:converter-scalars:2.3.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.5")
+    implementation("io.coil-kt.coil3:coil-compose:3.0.3")
+
+
+
 }
