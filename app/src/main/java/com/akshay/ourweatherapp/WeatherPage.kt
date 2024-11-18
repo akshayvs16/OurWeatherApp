@@ -1,5 +1,6 @@
 package com.akshay.ourweatherapp
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +49,7 @@ fun WeatherPage(viewModel: WeatherViewModel) {
     }
 
     val weatherResult = viewModel.weatherResult.observeAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier
@@ -68,6 +74,7 @@ fun WeatherPage(viewModel: WeatherViewModel) {
                 })
             IconButton(onClick = {
                 viewModel.getWeatherData(city)
+                keyboardController?.hide()
             }) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search Location")
 
@@ -126,12 +133,62 @@ fun WeatherDetails(data : WeatherModel){
             textAlign = TextAlign.Center
         )
         AsyncImage(
-            modifier = Modifier.size(260.dp),
+            modifier = Modifier.size(200.dp),
             model = "https:${data.current.condition.icon}".replace("64x64","128x128"),
-            contentDescription = "Condition Icon"
-
+            contentDescription =  "Condition icon",
         )
+        Text(text = data.current.condition.text,
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = Color.Gray
+            )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ){
+                    WeatherConditions(key = "Humidity", value =data.current.humidity )
+                    WeatherConditions(key = "Wind Speed", value =data.current.wind_kph+" km/h" )
+
+                }
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ){
+                    WeatherConditions(key = "UV", value =data.current.uv )
+                    WeatherConditions(key = "Precipitation", value =data.current.precip_mm +" mm")
+
+                }
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ){
+                    WeatherConditions(key = "Local Time", value =data.location.localtime.split(" ")[1] )
+                    WeatherConditions(key = "Local Date", value =data.location.localtime.split(" ")[0] )
+
+                }
+
+            }
+        }
 
     }
 }
 
+@Composable
+fun WeatherConditions(key:String,value:String){
+
+    Column(
+        modifier = Modifier.padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = value, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(text = key, fontWeight = FontWeight.SemiBold, color = Color.Gray)
+    }
+}
